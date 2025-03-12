@@ -282,7 +282,7 @@ function VideoDialog({ isOpen, onClose, videoUrl }: { isOpen: boolean; onClose: 
       <DialogContent className="sm:max-w-[425px] p-0">
         <div className="aspect-video w-full">
           <iframe
-            src={`https://youtube.com/shorts/9p5e2BSvoLs?si=4Y91OWeWx_9nys8i`}
+            src={`https://www.youtube.com/embed/${videoUrl}`}
             className="w-full h-full"
             allowFullScreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
