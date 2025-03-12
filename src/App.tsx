@@ -62,7 +62,7 @@ const workoutData = {
         reps: "40 sec work",
         sets: "3",
         notes: "Explosive jumps",
-        video: "dZhtrTZ9NTE"
+        video: "IfqrxS_-8oU"
       },
       {
         name: "Mountain Climbers",
@@ -115,7 +115,7 @@ const workoutData = {
         reps: "8 reps",
         sets: "3",
         notes: "Moderate weight",
-        video: "_TchJLlBO-4"
+        video: "1btG9xCFtvg"
       },
       {
         name: "Calf Raises",
@@ -123,7 +123,7 @@ const workoutData = {
         reps: "15 reps",
         sets: "3",
         notes: "Slow control",
-        video: "haHcBAd637E"
+        video: "fOfPwmb5FXU"
       },
       {
         name: "Jump Rope",
@@ -226,7 +226,7 @@ const workoutData = {
         reps: "30 sec",
         sets: "5",
         notes: "High intensity",
-        video: "IQnDZf7Ail0"
+        video: "W110XPDTo4Q"
       },
       {
         name: "Jumping Jacks",
@@ -242,7 +242,7 @@ const workoutData = {
         reps: "12 reps",
         sets: "3",
         notes: "Explosive jumps",
-        video: "GO8svp7cfMI"
+        video: "JcJ_eBVlY70"
       },
       {
         name: "Rope Slams",
@@ -250,7 +250,7 @@ const workoutData = {
         reps: "30 sec",
         sets: "3",
         notes: "Power slams",
-        video: "hKNB5_TLUb0"
+        video: "EX0-cWZXaSc"
       }
     ]
   },
@@ -263,7 +263,7 @@ const workoutData = {
         reps: "15-20 mins",
         sets: "-",
         notes: "Focus on breathing and flexibility",
-        video: "dRmM9CKJyFg"
+        video: "LnCQ-MECZSw"
       }
     ]
   }
@@ -293,7 +293,7 @@ function VideoDialog({ isOpen, onClose, videoUrl }: { isOpen: boolean; onClose: 
   );
 }
 
-function ExerciseCard({ exercise, index }: { exercise: any; index: number }) {
+function ExerciseCard({ exercise, index, onCompletionChange }: { exercise: any; index: number; onCompletionChange: (isChecked: boolean) => void }) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
@@ -310,7 +310,10 @@ function ExerciseCard({ exercise, index }: { exercise: any; index: number }) {
             <div className="flex items-center h-6">
               <Checkbox
                 checked={isCompleted}
-                onCheckedChange={(checked) => setIsCompleted(!!checked)}
+                onCheckedChange={(checked) => {
+                  setIsCompleted(!!checked);
+                  onCompletionChange(!!checked);
+                }}
                 className="data-[state=checked]:bg-green-600"
               />
             </div>
@@ -358,8 +361,18 @@ function ExerciseCard({ exercise, index }: { exercise: any; index: number }) {
   );
 }
 
+
 function DayTab({ day }: { day: string }) {
   const exercises = workoutData[day as keyof typeof workoutData]?.exercises || [];
+  const [completedExercises, setCompletedExercises] = useState<boolean[]>(new Array(exercises.length).fill(false));
+
+  const handleCompletionChange = (index: number, isChecked: boolean) => {
+    const updatedCompletion = [...completedExercises];
+    updatedCompletion[index] = isChecked;
+    setCompletedExercises(updatedCompletion);
+  };
+
+  const allCompleted = completedExercises.every(Boolean) && exercises.length > 0;
 
   return (
     <TabsContent value={day} className="mt-4">
@@ -376,14 +389,30 @@ function DayTab({ day }: { day: string }) {
           </div>
           <AnimatePresence>
             {exercises.map((exercise, index) => (
-              <ExerciseCard key={index} exercise={exercise} index={index} />
+              <ExerciseCard 
+                key={index} 
+                exercise={exercise} 
+                index={index} 
+                onCompletionChange={(isChecked) => handleCompletionChange(index, isChecked)}
+              />
             ))}
           </AnimatePresence>
+          {allCompleted && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 100 }}
+              className="mt-6 p-4 bg-green-100 text-green-700 rounded-lg text-center font-semibold"
+            >
+              🎉 Amazing job! You crushed today's workout! Keep pushing forward, and remember, every rep brings you closer to your goals! 💪🔥
+            </motion.div>
+          )}
         </motion.div>
       </ScrollArea>
     </TabsContent>
   );
 }
+
 
 export default function App() {
   const [activeDay, setActiveDay] = useState(getCurrentDay());
